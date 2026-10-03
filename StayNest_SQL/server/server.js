@@ -1,0 +1,17 @@
+const express=require('express');const cors=require('cors');require('dotenv').config();
+const {connectDB}=require('./config/db');
+const app=express();
+app.use(cors({origin:'http://localhost:3000',credentials:true}));app.use(express.json({limit:'2mb'}));
+app.use('/api/auth',require('./routes/authRoutes'));
+app.use('/api/properties',require('./routes/propertyRoutes'));
+app.use('/api/properties/:propertyId/reviews',require('./routes/reviewRoutes'));
+app.use('/api/shortlist',require('./routes/shortlistRoutes'));
+app.use('/api/bookings',require('./routes/bookingRoutes'));
+app.use('/api/visits',require('./routes/visitRoutes'));
+app.use('/api/conversations',require('./routes/messageRoutes'));
+app.use('/api/notifications',require('./routes/notificationRoutes'));
+app.use('/api/users',require('./routes/userRoutes'));
+app.get('/api/health',(req,res)=>res.json({success:true,message:'StayNest API + MySQL is running.'}));
+app.use((err,req,res,next)=>{console.error(err);res.status(err.status||500).json({success:false,message:err.message||'Internal Server Error'});});
+const PORT=process.env.PORT||5001;
+connectDB().then(()=>app.listen(PORT,()=>console.log(`StayNest API: http://localhost:${PORT}`)));
